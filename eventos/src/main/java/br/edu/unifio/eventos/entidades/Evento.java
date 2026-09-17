@@ -26,7 +26,7 @@ public class Evento {
 
     private LocalDateTime dataFim;
 
-    private Integer capacidade;
+    private Short capacidade;
 
     private String status;
 

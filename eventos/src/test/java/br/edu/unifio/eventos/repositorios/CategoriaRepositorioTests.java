@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -24,44 +23,56 @@ public class CategoriaRepositorioTests {
     @Test
     public void deveSalvarUmaCategoriaNova() {
         var categoria = new Categoria();
-        categoria.setNome("Cosméticos");
-        categoria.setDescricao("Perfumes e loções");
+        categoria.setNome("Design & UX");
+        categoria.setDescricao("Cursos e eventos focados em interface e experiência do usuário");
 
         categoriaRepositorio.save(categoria);
 
         assertNotNull(categoria.getId());
+        assertEquals((short) 6, categoria.getId());
     }
 
     @Test
     public void deveBuscarUmaCategoriaPorId() {
-        var categoria = categoriaRepositorio.findById((short) 1).orElse(null);
+        Categoria categoria = categoriaRepositorio.findById(Short.parseShort("3")).orElseThrow();
 
         assertNotNull(categoria);
-        assertEquals("Informática", categoria.getNome());
+        assertEquals("Eletrônicos", categoria.getNome());
     }
 
     @Test
-    public void deveBuscarTodosAsCategorias() {
+    public void deveBuscarTodasAsCategorias() {
         List<Categoria> categorias = categoriaRepositorio.findAll(Sort.by("nome"));
 
-        assertEquals(6, categorias.size());
-        assertEquals("Cosméticos", categorias.get(0).getNome());
-        assertEquals("Eletrônicos", categorias.get(1).getNome());
+        assertEquals(7, categorias.size());
+        assertEquals("Design & UX", categorias.get(0).getNome());
+        assertEquals("Moda", categorias.get(4).getNome());
     }
 
     @Test
-    public void deveExcluirUmaCategoriaPorId () {
-        var categoria = categoriaRepositorio.findById((short) 1).orElse(null);
-        categoriaRepositorio.delete(categoria);
-        assertFalse(categoriaRepositorio.existsById((short) 1));
-        
-        var categoria = categoriaRepositorio.findById(Short.parseShort("1")).orElseThrow();
-        categoria.setCategoria(categoria);
+    public void deveExcluirUmaCategoriaPorId() {
+        var categoria = new Categoria();
+        categoria.setNome("Categoria Teste");
+        categoria.setDescricao("Descrição Teste");
 
         categoriaRepositorio.save(categoria);
 
         assertTrue(categoriaRepositorio.existsById(categoria.getId()));
         categoriaRepositorio.deleteById(categoria.getId());
         assertFalse(categoriaRepositorio.existsById(categoria.getId()));
+    }
+
+    @Test
+    public void deveAtualizarONomeDeUmaCategoria() {
+        var categoria = new Categoria();
+        categoria.setNome("Nome Teste");
+        categoria.setDescricao("Descrição Teste");
+
+        categoriaRepositorio.save(categoria);
+
+        categoria.setNome("Outro Nome Teste");
+        categoriaRepositorio.save(categoria);
+
+        assertEquals("Outro Nome Teste", categoriaRepositorio.findById(categoria.getId()).orElseThrow().getNome());
     }
 }
